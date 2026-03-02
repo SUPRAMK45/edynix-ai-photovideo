@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Slideshow Creator</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+    }
+
+    .card {
+        width: 480px;
+        padding: 40px;
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.3);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        text-align: center;
+        color: white;
+    }
+
+    h1 {
+        font-size: 30px;
+        margin-bottom: 8px;
+    }
+
+    .subtitle {
+        font-size: 14px;
+        opacity: 0.85;
+        margin-bottom: 30px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px; /* 🔥 fixes overlapping */
+    }
+
+    .upload-box {
+        border: 2px dashed rgba(255,255,255,0.6);
+        padding: 25px;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .upload-box:hover {
+        background: rgba(255,255,255,0.15);
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+
+    select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: none;
+        font-size: 14px;
+        outline: none;
+    }
+
+    button {
+        padding: 14px;
+        border-radius: 15px;
+        border: none;
+        background: linear-gradient(90deg, #00c6ff, #0072ff);
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 25px rgba(0,0,0,0.3);
+    }
+
+    .credit {
+        margin-top: 25px;
+        font-size: 13px;
+        opacity: 0.9;
+    }
+
+    .credit span {
+        font-weight: bold;
+        color: #ffd86f;
+    }
+
+</style>
+</head>
+<body>
+
+<div class="card">
+
+    <h1>Photo To Video Creator 🎬</h1>
+    <div class="subtitle">
+        Turn your photos into stunning videos in seconds
+    </div>
+
+    <form action="/upload" method="post" enctype="multipart/form-data">
+
+        <label class="upload-box">
+            📸 Click to Upload Photos
+            <input type="file" name="photos" multiple required>
+        </label>
+
+        <select name="duration">
+            {% for i in range(1,16) %}
+                <option value="{{ i }}">{{ i }} Seconds Per Photo</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">✨ Create Video</button>
+
+    </form>
+
+    <div class="credit">
+        Made By <span>Supratik Shukla</span><br>
+        a 14yo AI Enthusiast & Gamer 🎮
+    </div>
+
+</div>
+
+</body>
+</html>

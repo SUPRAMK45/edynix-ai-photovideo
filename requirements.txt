@@ -1,0 +1,9 @@
+flask
+moviepy
+imageio
+imageio-ffmpeg
+numpy
+pillow
+proglog
+python-dotenv
+gunicorn
