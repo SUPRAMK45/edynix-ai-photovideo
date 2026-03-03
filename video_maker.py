@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, send_file
 from moviepy import ImageClip, concatenate_videoclips, ColorClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 import os
+import uuid
 
 app = Flask(__name__)
 
@@ -10,6 +11,9 @@ OUTPUT_FOLDER = "outputs"
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
+# Limit upload size (50MB)
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 
 
 @app.route('/')
@@ -20,7 +24,7 @@ def home():
 @app.route('/upload', methods=['POST'])
 def upload():
     files = request.files.getlist("photos")
-    duration = int(request.form.get("duration", 3))  # default 3 sec
+    duration = int(request.form.get("duration", 3))
 
     if not files:
         return "No files uploaded"
@@ -28,14 +32,16 @@ def upload():
     image_paths = []
 
     for file in files:
-        filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+        unique_name = str(uuid.uuid4()) + "_" + file.filename
+        filepath = os.path.join(UPLOAD_FOLDER, unique_name)
         file.save(filepath)
         image_paths.append(filepath)
 
     clips = []
 
-    TARGET_WIDTH = 1280
-    TARGET_HEIGHT = 720
+    # LOWER resolution to prevent Railway crash
+    TARGET_WIDTH = 854
+    TARGET_HEIGHT = 480
 
     for img in image_paths:
         clip = ImageClip(img)
@@ -53,7 +59,8 @@ def upload():
 
     final_video = concatenate_videoclips(clips)
 
-    output_path = os.path.join(OUTPUT_FOLDER, "final_video.mp4")
+    output_filename = str(uuid.uuid4()) + "_final_video.mp4"
+    output_path = os.path.join(OUTPUT_FOLDER, output_filename)
 
     final_video.write_videofile(
         output_path,
@@ -61,8 +68,15 @@ def upload():
         codec="libx264"
     )
 
+    # Clean uploaded images
+    for path in image_paths:
+        if os.path.exists(path):
+            os.remove(path)
+
     return send_file(output_path, as_attachment=True)
 
 
+# Railway production port handling
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
